@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b0fff948-693e-41c0-93d9-83b3a906778a" >
+		<http:listener-connection host="0.0.0.0" port="8084" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="17140c0c-b503-4fee-9d5a-df7165b133c3" >
+		<db:my-sql-connection host="127.0.0.1" port="3306" user="root" password="root" database="employee" />
+	</db:config>
+	<flow name="mapi_munitFlow" doc:id="57d0a811-f3da-42ca-afc8-e62841092d80" >
+		<http:listener doc:name="Listener" doc:id="a20a0d6a-74ae-4a38-9e7c-b670172da5ff" config-ref="HTTP_Listener_config" path="/test"/>
+		<db:select doc:id="e1da6a9d-dda1-4ec7-b533-e3240f42c93c" config-ref="Database_Config">
+			<db:sql ><![CDATA[Select * from emp_appraisal ]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="2b463cdd-f5cd-4a56-b5cb-285f63bb50df" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="7bcbddc5-44ff-466a-a9e5-918e98eadc63" message="end logger"/>
+	</flow>
+</mule>
